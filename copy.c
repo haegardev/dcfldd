@@ -265,6 +265,12 @@ int dd_copy(void)
             {
                 print_stats();
                 /* Seek past the bad block if possible. */
+                /* FIXME The following seek creates to big holes in the
+                 * created image in some cases.
+                 * For instance if a block with a size of 4096 bytes are
+                 * corrupted in the source and the default block size of 32768
+                 * bytes are used, then 32768-4096 bytes are lost.
+                 */
                 lseek(STDIN_FILENO, (off_t) input_blocksize, SEEK_CUR);
                 if (conversions_mask & C_SYNC) {
                     /* Replace the missing input with null bytes and
