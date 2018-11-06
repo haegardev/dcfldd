@@ -272,11 +272,14 @@ int dd_copy(void)
                 memset((char *) ibuf, (conversions_mask &
                        (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0', input_blocksize);
 
+                //FIXME hole is even bigger from 004ff000 to 00501000 in the example
+                //If the addional buffer is filled with an other character
+                //than zero the buffer goes from 00500000 to 00501000 in the axample
                 nread=0;
                 for (i=0; i < input_blocksize; i++) {
                      if (safe_read(STDIN_FILENO, &ch, 1) < 0) {
                         if (C_SYNC) {
-                            ibuf[i]='\0';
+                            ibuf[i]='A';
                             nread++;
                         }
                         /* If C_SYNC is not set nread is not incremented and
