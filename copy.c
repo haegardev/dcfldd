@@ -272,7 +272,24 @@ int dd_copy(void)
                 memset((char *) ibuf, (conversions_mask &
                        (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0', input_blocksize);
 
-                lseek(STDIN_FILENO, (off_t) input_blocksize, SEEK_CUR);
+                nread=0;
+                for (i=0; i < input_blocksize; i++) {
+                     if (safe_read(STDIN_FILENO, &ch, 1) < 0) {
+                        if (C_SYNC) {
+                            ibuf[i]='\0';
+                            nread++;
+                        }
+                        /* If C_SYNC is not set nread is not incremented and
+                         * the same position in the buffer is resused
+                         *
+                         * Skip the broken byte
+                         */
+                         lseek(STDIN_FILENO, (off_t) 1, SEEK_CUR);
+                     } else {
+                        ibuf[i]=ch;
+                        nread++;
+                     }
+                }
                 if (conversions_mask & C_SYNC) {
                     /* Replace the missing input with null bytes and
                        proceed normally.  */
