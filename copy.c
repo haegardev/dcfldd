@@ -156,6 +156,8 @@ int dd_copy(void)
     int input_from_pattern = !input_from_stream;
     size_t page_size = getpagesize();
     size_t n_bytes_read;    
+    size_t i;
+    unsigned char ch;
     
     /* Leave at least one extra byte at the beginning and end of `ibuf'
        for conv=swab, but keep the buffer address even.  But some peculiar
