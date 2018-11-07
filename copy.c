@@ -251,8 +251,16 @@ int dd_copy(void)
            This minimizes data loss. */
         if (!input_from_pattern) {
             if ((conversions_mask & C_SYNC) && (conversions_mask & C_NOERROR))
+                /* This  memset is executed before the probing of the defective
+                 * bytes.
+                 * FIXME the remaining memory chunk after the error is included
+                 * in the output file which causes too big holes
+                 * If it is filled with zeros the buffer size in the
+                 * probing part could be reduced  by the number of remaining
+                 * zeros in the buffer below
+                 */
                 memset((char *) ibuf,
-                       (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
+                       (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : 'B',
                        input_blocksize);
     
             nread = safe_read(STDIN_FILENO, ibuf, input_blocksize);
